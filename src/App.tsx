@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, TrendingUp, Target, PiggyBank } from "lucide-react";
 
 import Heading from "./components/Heading";
 import InvestmentInput from "./components/InvestmentInput";
 import RendimentoInfo from "./components/RendimentoInfo";
 import Result from "./components/Result";
-import ResetButton from "./components/ResetButton";
+import CalculateButton from "./components/CalculateButton";
 
 const App: React.FC = () => {
   const [valorAtualStr, setValorAtualStr] = useState("");
@@ -14,30 +14,44 @@ const App: React.FC = () => {
   const [rendimentoAnualStr, setRendimentoAnualStr] = useState("");
   const [valorAlvoStr, setValorAlvoStr] = useState("");
   const [showRendimentoInfo, setShowRendimentoInfo] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
-  const valorAtual = parseFloat(valorAtualStr.replace(",", ".")) || 0;
-  const aporteMensal = parseFloat(aporteMensalStr.replace(",", ".")) || 0;
-  const rendimentoAnual = parseFloat(rendimentoAnualStr.replace(",", ".")) || 0;
-  const valorAlvo = parseFloat(valorAlvoStr.replace(",", ".")) || 0;
-  const rendimentoMensal = rendimentoAnual / 12 / 100;
+  const calculateFinancialFreedom = () => {
+    const valorAtual = parseFloat(valorAtualStr.replace(",", ".")) || 0;
+    const aporteMensal = parseFloat(aporteMensalStr.replace(",", ".")) || 0;
+    const rendimentoAnual =
+      parseFloat(rendimentoAnualStr.replace(",", ".")) || 0;
+    const valorAlvo = parseFloat(valorAlvoStr.replace(",", ".")) || 0;
+    const rendimentoMensal = rendimentoAnual / 12 / 100;
 
-  let meses = 0;
-  let montante = valorAtual;
-  while (montante < valorAlvo && meses < 1000 * 12) {
-    montante = montante * (1 + rendimentoMensal) + aporteMensal;
-    meses++;
-  }
+    let meses = 0;
+    let montante = valorAtual;
+    while (montante < valorAlvo && meses < 1000 * 12) {
+      montante = montante * (1 + rendimentoMensal) + aporteMensal;
+      meses++;
+    }
 
-  const anos = Math.floor(meses / 12);
-  const restoMeses = meses % 12;
-  const valorAlvoInvalido = valorAlvo <= 0;
+    return {
+      meses,
+      anos: Math.floor(meses / 12),
+      restoMeses: meses % 12,
+      valorAlvo,
+      valorAlvoInvalido: valorAlvo <= 0,
+    };
+  };
 
-  function handleReset() {
-    setValorAtualStr("");
-    setAporteMensalStr("");
-    setRendimentoAnualStr("");
-    setValorAlvoStr("");
-    setShowRendimentoInfo(false);
+  const [result, setResult] = useState({
+    meses: 0,
+    anos: 0,
+    restoMeses: 0,
+    valorAlvo: 0,
+    valorAlvoInvalido: true,
+  });
+
+  function handleCalculate() {
+    const calculatedResult = calculateFinancialFreedom();
+    setResult(calculatedResult);
+    setShowResult(true);
   }
 
   return (
@@ -85,16 +99,32 @@ const App: React.FC = () => {
           />
         </div>
 
-        <Result
-          valorAlvoInvalido={valorAlvoInvalido}
-          meses={meses}
-          anos={anos}
-          restoMeses={restoMeses}
-          valorAlvo={valorAlvo}
-        />
         <div className="flex justify-center">
-          <ResetButton onClick={handleReset} />
+          <CalculateButton onClick={handleCalculate} />
         </div>
+
+        <AnimatePresence mode="wait">
+          {showResult && (
+            <motion.div
+              key={
+                // essa string única força a animação ao mudar os valores
+                `${result.meses}-${result.anos}-${result.restoMeses}-${result.valorAlvo}-${result.valorAlvoInvalido}`
+              }
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Result
+                valorAlvoInvalido={result.valorAlvoInvalido}
+                meses={result.meses}
+                anos={result.anos}
+                restoMeses={result.restoMeses}
+                valorAlvo={result.valorAlvo}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );

@@ -32,9 +32,9 @@ const Result: React.FC<Props> = ({
         animate={{ y: 0, opacity: 1 }}
         className="text-2xl font-semibold text-dark"
       >
-        Você atingirá a liberdade financeira em{" "}
-        <span className="text-primary-dark">{anos}</span> anos e{" "}
-        <span className="text-primary-dark">{restoMeses}</span> meses.
+        Você atingirá sua meta financeira em{" "}
+        <span className="text-accent">{anos}</span> anos e{" "}
+        <span className="text-accent">{restoMeses}</span> meses.
       </motion.div>
     )}
     {!valorAlvoInvalido && (
