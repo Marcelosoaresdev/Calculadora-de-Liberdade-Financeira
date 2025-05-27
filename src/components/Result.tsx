@@ -7,6 +7,8 @@ interface Props {
   anos: number;
   restoMeses: number;
   valorAlvo: number;
+  valorAtualMaiorQueAlvo?: boolean;
+  aporteMaiorQueAlvo?: boolean;
 }
 
 const Result: React.FC<Props> = ({
@@ -15,11 +17,22 @@ const Result: React.FC<Props> = ({
   anos,
   restoMeses,
   valorAlvo,
+  valorAtualMaiorQueAlvo,
+  aporteMaiorQueAlvo,
 }) => (
   <div className="text-center min-h-[50px]">
     {valorAlvoInvalido ? (
       <p className="text-danger font-semibold text-lg">
         Por favor, insira um valor alvo válido (maior que zero).
+      </p>
+    ) : valorAtualMaiorQueAlvo ? (
+      <p className="text-green-700 font-semibold text-lg">
+        Parabéns! O valor já investido é maior que o valor alvo desejado.
+      </p>
+    ) : aporteMaiorQueAlvo ? (
+      <p className="text-warning font-semibold text-lg">
+        Seu aporte mensal é maior que o valor alvo. Confira os valores
+        informados.
       </p>
     ) : meses >= 1000 * 12 ? (
       <p className="text-danger font-semibold text-lg">

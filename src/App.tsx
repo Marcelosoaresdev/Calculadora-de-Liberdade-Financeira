@@ -16,6 +16,16 @@ const App: React.FC = () => {
   const [showRendimentoInfo, setShowRendimentoInfo] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
+  const [result, setResult] = useState({
+    meses: 0,
+    anos: 0,
+    restoMeses: 0,
+    valorAlvo: 0,
+    valorAlvoInvalido: true,
+    valorAtualMaiorQueAlvo: false,
+    aporteMaiorQueAlvo: false,
+  });
+
   const calculateFinancialFreedom = () => {
     const valorAtual = parseFloat(valorAtualStr.replace(",", ".")) || 0;
     const aporteMensal = parseFloat(aporteMensalStr.replace(",", ".")) || 0;
@@ -23,6 +33,16 @@ const App: React.FC = () => {
       parseFloat(rendimentoAnualStr.replace(",", ".")) || 0;
     const valorAlvo = parseFloat(valorAlvoStr.replace(",", ".")) || 0;
     const rendimentoMensal = rendimentoAnual / 12 / 100;
+
+    let valorAtualMaiorQueAlvo = false;
+    let aporteMaiorQueAlvo = false;
+
+    if (valorAtual > valorAlvo && valorAlvo > 0) {
+      valorAtualMaiorQueAlvo = true;
+    }
+    if (aporteMensal > valorAlvo && valorAlvo > 0) {
+      aporteMaiorQueAlvo = true;
+    }
 
     let meses = 0;
     let montante = valorAtual;
@@ -37,16 +57,10 @@ const App: React.FC = () => {
       restoMeses: meses % 12,
       valorAlvo,
       valorAlvoInvalido: valorAlvo <= 0,
+      valorAtualMaiorQueAlvo,
+      aporteMaiorQueAlvo,
     };
   };
-
-  const [result, setResult] = useState({
-    meses: 0,
-    anos: 0,
-    restoMeses: 0,
-    valorAlvo: 0,
-    valorAlvoInvalido: true,
-  });
 
   function handleCalculate() {
     const calculatedResult = calculateFinancialFreedom();
@@ -102,14 +116,10 @@ const App: React.FC = () => {
         <div className="flex justify-center">
           <CalculateButton onClick={handleCalculate} />
         </div>
-
         <AnimatePresence mode="wait">
           {showResult && (
             <motion.div
-              key={
-                // essa string única força a animação ao mudar os valores
-                `${result.meses}-${result.anos}-${result.restoMeses}-${result.valorAlvo}-${result.valorAlvoInvalido}`
-              }
+              key={`${result.meses}-${result.anos}-${result.restoMeses}-${result.valorAlvo}-${result.valorAlvoInvalido}-${result.valorAtualMaiorQueAlvo}-${result.aporteMaiorQueAlvo}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -121,6 +131,8 @@ const App: React.FC = () => {
                 anos={result.anos}
                 restoMeses={result.restoMeses}
                 valorAlvo={result.valorAlvo}
+                valorAtualMaiorQueAlvo={result.valorAtualMaiorQueAlvo}
+                aporteMaiorQueAlvo={result.aporteMaiorQueAlvo}
               />
             </motion.div>
           )}
