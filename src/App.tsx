@@ -23,6 +23,7 @@ const App: React.FC = () => {
     valorAlvo: 0,
     valorAlvoInvalido: true,
     valorAtualMaiorQueAlvo: false,
+    valorIgualAlvo: false,
     aporteMaiorQueAlvo: false,
   });
 
@@ -36,10 +37,16 @@ const App: React.FC = () => {
 
     let valorAtualMaiorQueAlvo = false;
     let aporteMaiorQueAlvo = false;
+    let valorIgualAlvo = false;
 
     if (valorAtual > valorAlvo && valorAlvo > 0) {
       valorAtualMaiorQueAlvo = true;
     }
+
+    if (valorAtual === valorAlvo) {
+      valorIgualAlvo = true;
+    }
+
     if (aporteMensal > valorAlvo && valorAlvo > 0) {
       aporteMaiorQueAlvo = true;
     }
@@ -58,6 +65,7 @@ const App: React.FC = () => {
       valorAlvo,
       valorAlvoInvalido: valorAlvo <= 0,
       valorAtualMaiorQueAlvo,
+      valorIgualAlvo,
       aporteMaiorQueAlvo,
     };
   };
@@ -119,7 +127,7 @@ const App: React.FC = () => {
         <AnimatePresence mode="wait">
           {showResult && (
             <motion.div
-              key={`${result.meses}-${result.anos}-${result.restoMeses}-${result.valorAlvo}-${result.valorAlvoInvalido}-${result.valorAtualMaiorQueAlvo}-${result.aporteMaiorQueAlvo}`}
+              key={`${result.meses}-${result.anos}-${result.restoMeses}-${result.valorAlvo}-${result.valorAlvoInvalido}-${result.valorAtualMaiorQueAlvo}-${result.aporteMaiorQueAlvo}-${result.valorIgualAlvo}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -133,6 +141,7 @@ const App: React.FC = () => {
                 valorAlvo={result.valorAlvo}
                 valorAtualMaiorQueAlvo={result.valorAtualMaiorQueAlvo}
                 aporteMaiorQueAlvo={result.aporteMaiorQueAlvo}
+                valorIgualAlvo={result.valorIgualAlvo}
               />
             </motion.div>
           )}
